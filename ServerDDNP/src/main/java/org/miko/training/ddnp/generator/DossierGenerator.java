@@ -1,8 +1,10 @@
 package org.miko.training.ddnp.generator;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.miko.training.ddnp.model.dto.DossierDTO;
 import org.miko.training.ddnp.model.dto.EventDTO;
+import org.miko.training.ddnp.model.dto.VehicleIdentityDTO;
 import org.miko.training.ddnp.model.enumeration.EventType;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class DossierGenerator {
 
     private static final int STAGE_MONTHS = 2;
@@ -23,14 +26,7 @@ public class DossierGenerator {
     private final EventHistoryGenerator eventHistoryGenerator;
     private final ReceptionInfoGenerator receptionInfoGenerator;
     private final VehicleIdentityGenerator vehicleIdentityGenerator;
-
-    public DossierGenerator(EventHistoryGenerator eventHistoryGenerator,
-                            ReceptionInfoGenerator receptionInfoGenerator,
-                            VehicleIdentityGenerator vehicleIdentityGenerator) {
-        this.eventHistoryGenerator = eventHistoryGenerator;
-        this.receptionInfoGenerator = receptionInfoGenerator;
-        this.vehicleIdentityGenerator = vehicleIdentityGenerator;
-    }
+    private final TechnicalInfoGenerator technicalInfoGenerator;
 
     public void generate() {
         int stage = 0;
@@ -69,11 +65,14 @@ public class DossierGenerator {
         // Дата приёмки — дата первого события досье.
         LocalDate receptionDate = eventHistoryFull.get(0).getWhenProcessed().toLocalDate();
 
+        VehicleIdentityDTO vehicleIdentity = vehicleIdentityGenerator.generate();
+
         DossierDTO dossier = DossierDTO.builder()
                 .id(UUID.randomUUID().toString())
                 .uid(UUID.randomUUID().toString())
                 .receptionInfo(receptionInfoGenerator.generate(receptionDate))
-                .vehicleIdentity(vehicleIdentityGenerator.generate())
+                .vehicleIdentity(vehicleIdentity)
+                .technicalInfo(technicalInfoGenerator.generate(vehicleIdentity.getManufactureDate()))
                 .currentState(currentState)
                 .eventHistory(new LinkedHashSet<>(eventHistory))
                 .eventHistoryFull(new LinkedHashSet<>(eventHistoryFull))
