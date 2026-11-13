@@ -22,11 +22,14 @@ public class DossierGenerator {
 
     private final EventHistoryGenerator eventHistoryGenerator;
     private final ReceptionInfoGenerator receptionInfoGenerator;
+    private final VehicleIdentityGenerator vehicleIdentityGenerator;
 
     public DossierGenerator(EventHistoryGenerator eventHistoryGenerator,
-                            ReceptionInfoGenerator receptionInfoGenerator) {
+                            ReceptionInfoGenerator receptionInfoGenerator,
+                            VehicleIdentityGenerator vehicleIdentityGenerator) {
         this.eventHistoryGenerator = eventHistoryGenerator;
         this.receptionInfoGenerator = receptionInfoGenerator;
+        this.vehicleIdentityGenerator = vehicleIdentityGenerator;
     }
 
     public void generate() {
@@ -70,6 +73,7 @@ public class DossierGenerator {
                 .id(UUID.randomUUID().toString())
                 .uid(UUID.randomUUID().toString())
                 .receptionInfo(receptionInfoGenerator.generate(receptionDate))
+                .vehicleIdentity(vehicleIdentityGenerator.generate())
                 .currentState(currentState)
                 .eventHistory(new LinkedHashSet<>(eventHistory))
                 .eventHistoryFull(new LinkedHashSet<>(eventHistoryFull))
