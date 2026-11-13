@@ -1,5 +1,5 @@
 target/
-.mvn/wrapper/maven-wrapper.jar
+farm-vehichles-model/.mvn/wrapper/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -30,3 +30,4 @@ build/
 
 ### VS Code ###
 .vscode/
+.commandcode/
