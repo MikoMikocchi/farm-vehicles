@@ -27,6 +27,7 @@ public class DossierGenerator {
     private final ReceptionInfoGenerator receptionInfoGenerator;
     private final VehicleIdentityGenerator vehicleIdentityGenerator;
     private final TechnicalInfoGenerator technicalInfoGenerator;
+    private final SellerGenerator sellerGenerator;
 
     public void generate() {
         int stage = 0;
@@ -73,6 +74,7 @@ public class DossierGenerator {
                 .receptionInfo(receptionInfoGenerator.generate(receptionDate))
                 .vehicleIdentity(vehicleIdentity)
                 .technicalInfo(technicalInfoGenerator.generate(vehicleIdentity.getManufactureDate()))
+                .seller(sellerGenerator.generate())
                 .currentState(currentState)
                 .eventHistory(new LinkedHashSet<>(eventHistory))
                 .eventHistoryFull(new LinkedHashSet<>(eventHistoryFull))

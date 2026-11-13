@@ -47,6 +47,30 @@ public final class Randoms {
     }
 
     /**
+     * Случайная последовательность из {@code length} цифр (ведущие нули допустимы).
+     */
+    public static String randomDigitSequence(int length) {
+        StringBuilder digits = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            digits.append(ThreadLocalRandom.current().nextInt(10));
+        }
+
+        return digits.toString();
+    }
+
+    /**
+     * Случайный номер в формате +7-xxx-xxx-xx-xx.
+     */
+    public static String randomPhoneNumber() {
+        return String.format("+7-%03d-%03d-%02d-%02d",
+                ThreadLocalRandom.current().nextInt(1000),
+                ThreadLocalRandom.current().nextInt(1000),
+                ThreadLocalRandom.current().nextInt(100),
+                ThreadLocalRandom.current().nextInt(100));
+    }
+
+    /**
      * Случайный набор из {@code length} заглавных латинских букв и цифр.
      */
     public static String randomAlphanumeric(int length) {

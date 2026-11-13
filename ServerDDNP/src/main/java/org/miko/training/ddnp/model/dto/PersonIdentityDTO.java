@@ -17,5 +17,5 @@ public class PersonIdentityDTO {
 
     private LocalDate birthDate;
 
-    private String taxIdentificationNumber;
+    private String taxIdentificationNumber; // типо ИНН, но для человека
 }
