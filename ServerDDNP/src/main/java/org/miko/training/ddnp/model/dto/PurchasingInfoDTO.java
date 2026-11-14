@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchasingInfoDTO {
-
     private LocalDate decisionDate;
     private LocalDate purchaseDate;
     private String purchaseContractNumber;

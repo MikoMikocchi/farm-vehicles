@@ -43,20 +43,6 @@ public class SellerGenerator {
             "Омский район",
             "Курский район");
 
-    private static final List<String> CITIES = List.of(
-            "Серпухов",
-            "Гатчина",
-            "Краснодар",
-            "Азов",
-            "Воронеж",
-            "Екатеринбург",
-            "Новосибирск",
-            "Казань",
-            "Саратов",
-            "Ставрополь",
-            "Омск",
-            "Курск");
-
     private static final List<String> STREETS = List.of(
             "Ленина",
             "Советская",
@@ -155,7 +141,7 @@ public class SellerGenerator {
                 .postalCode(Randoms.randomDigits(6))
                 .region(REGIONS.get(location))
                 .district(DISTRICTS.get(location))
-                .city(CITIES.get(location))
+                .city(Cities.CITIES.get(location))
                 .street(Randoms.randomElement(STREETS))
                 .house(String.valueOf(Randoms.randomInt(1, 140)))
                 .building(String.valueOf(Randoms.randomInt(0, 3)))

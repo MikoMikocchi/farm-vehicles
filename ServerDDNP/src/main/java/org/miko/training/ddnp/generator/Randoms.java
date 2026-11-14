@@ -1,5 +1,6 @@
 package org.miko.training.ddnp.generator;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -68,6 +69,10 @@ public final class Randoms {
                 ThreadLocalRandom.current().nextInt(1000),
                 ThreadLocalRandom.current().nextInt(100),
                 ThreadLocalRandom.current().nextInt(100));
+    }
+
+    public static BigDecimal randomAmount(long fromInclusive, long toInclusive) {
+        return BigDecimal.valueOf(ThreadLocalRandom.current().nextLong(fromInclusive, toInclusive + 1));
     }
 
     /**

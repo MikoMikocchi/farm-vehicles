@@ -4,17 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.miko.training.ddnp.model.dto.DossierDTO;
 import org.miko.training.ddnp.model.dto.EventDTO;
+import org.miko.training.ddnp.model.dto.PurchasingInfoDTO;
+import org.miko.training.ddnp.model.dto.ReceivingInfoDTO;
 import org.miko.training.ddnp.model.dto.VehicleIdentityDTO;
 import org.miko.training.ddnp.model.enumeration.EventType;
+import org.miko.training.ddnp.utils.EventUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -23,11 +23,17 @@ public class DossierGenerator {
 
     private static final int STAGE_MONTHS = 2;
 
+    private static final DateTimeFormatter UID_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMyyyy");
+
+    private int dossierCounter = 0;
+
     private final EventHistoryGenerator eventHistoryGenerator;
     private final ReceptionInfoGenerator receptionInfoGenerator;
     private final VehicleIdentityGenerator vehicleIdentityGenerator;
     private final TechnicalInfoGenerator technicalInfoGenerator;
     private final SellerGenerator sellerGenerator;
+    private final PurchasingInfoGenerator purchasingInfoGenerator;
+    private final ReceivingInfoGenerator receivingInfoGenerator;
 
     public void generate() {
         int stage = 0;
@@ -68,19 +74,43 @@ public class DossierGenerator {
 
         VehicleIdentityDTO vehicleIdentity = vehicleIdentityGenerator.generate();
 
+        // Данные о приобретении есть только в досье, где было событие VEHICLE_PURCHASED.
+        PurchasingInfoDTO purchasingInfo = EventUtils.isActualEventPresent(eventHistoryFull, EventType.VEHICLE_PURCHASED)
+                ? purchasingInfoGenerator.generate(eventHistoryFull)
+                : null;
+
+        // Данные о приёмке есть только в досье, где было событие VEHICLE_RECEIVED.
+        ReceivingInfoDTO receivingInfo = EventUtils.isActualEventPresent(eventHistoryFull, EventType.VEHICLE_RECEIVED)
+                ? receivingInfoGenerator.generate(eventHistoryFull)
+                : null;
+
         DossierDTO dossier = DossierDTO.builder()
-                .id(UUID.randomUUID().toString())
-                .uid(UUID.randomUUID().toString())
+                .pk(UUID.randomUUID().toString())
+                .uid(uid(receptionDate))
                 .receptionInfo(receptionInfoGenerator.generate(receptionDate))
                 .vehicleIdentity(vehicleIdentity)
                 .technicalInfo(technicalInfoGenerator.generate(vehicleIdentity.getManufactureDate()))
                 .seller(sellerGenerator.generate())
+                .purchasingInfo(purchasingInfo)
+                .receivingInfo(receivingInfo)
                 .currentState(currentState)
-                .eventHistory(new LinkedHashSet<>(eventHistory))
-                .eventHistoryFull(new LinkedHashSet<>(eventHistoryFull))
+                .eventHistory(eventHistory)
+                .eventHistoryFull(eventHistoryFull)
+                .salePermitted(Randoms.randomBoolean())
+                .saleRestrictionAdded(Randoms.randomBoolean())
+                .breakdowns(Randoms.randomBoolean())
+                .warehouseId(UUID.randomUUID().toString())
                 .build();
 
         save(dossier);
+    }
+
+    /**
+     * uid = "1000" + ddMMyyyy даты приёмки + порядковый номер досье (6 знаков, с ведущими нулями).
+     */
+    private String uid(LocalDate receptionDate) {
+        dossierCounter++;
+        return "1000" + receptionDate.format(UID_DATE_FORMAT) + String.format("%06d", dossierCounter);
     }
 
     private LocalDateTime statusTime(int stage) {
