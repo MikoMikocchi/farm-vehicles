@@ -2,12 +2,14 @@ package org.miko.training.ddnp.generator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.miko.training.ddnp.mapper.DossierEntityMapped;
 import org.miko.training.ddnp.model.dto.DossierDTO;
 import org.miko.training.ddnp.model.dto.EventDTO;
 import org.miko.training.ddnp.model.dto.PurchasingInfoDTO;
 import org.miko.training.ddnp.model.dto.ReceivingInfoDTO;
 import org.miko.training.ddnp.model.dto.VehicleIdentityDTO;
 import org.miko.training.ddnp.model.enumeration.EventType;
+import org.miko.training.ddnp.repository.DossierRepository;
 import org.miko.training.ddnp.utils.EventUtils;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,7 @@ public class DossierGenerator {
     private final SellerGenerator sellerGenerator;
     private final PurchasingInfoGenerator purchasingInfoGenerator;
     private final ReceivingInfoGenerator receivingInfoGenerator;
+    private final DossierRepository dossierRepository;
 
     public void generate() {
         int stage = 0;
@@ -122,9 +125,8 @@ public class DossierGenerator {
         return whenProcessed.atStartOfDay();
     }
 
-    /**
-     * Заглушка: здесь DossierDTO будет преобразовываться в entity и сохраняться.
-     */
     private void save(DossierDTO dossier) {
+        DossierEntityMapped mapped = new DossierEntityMapped(dossier);
+        dossierRepository.save(mapped.getDossier());
     }
 }
